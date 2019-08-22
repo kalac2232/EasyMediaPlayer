@@ -1,7 +1,13 @@
 package cn.kalac.easymediaplayer;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.Context;
+import android.os.Bundle;
+import android.util.Log;
+
+import androidx.appcompat.app.AppCompatActivity;
+
 
 /**
  * @author kalac.
@@ -9,17 +15,99 @@ import android.content.Context;
  */
 public class EasyMediaPlayer {
 
+    private static final String TAG = "EasyMediaPlayer";
 
-    public static MediaManager with(Activity activity) {
+    private static EasyMediaPlayer mEasyMediaPlayer;
 
-        if (activity == null) {
-            throw new NullPointerException("activity is null");
+
+    public static MediaManager with(Context context) {
+
+        if (context == null) {
+            throw new NullPointerException("context is null");
         }
-        return new MediaManager();
+
+        MediaManager mediaManager = new MediaManager(context);
+
+        if (context instanceof Activity) {
+            addLifeListener((Activity) context,mediaManager);
+        }
+
+        return mediaManager;
     }
 
-    public static void with(Context context) {
+    private static void addLifeListener(Activity activity, MediaManager mediaManager) {
+
+
+        LifeListenerFragment fragment = getLifeListenerFragment(activity);
+        fragment.addLifeListener(new MediaLifeListener(mediaManager));
 
     }
+
+
+    private static LifeListenerFragment getLifeListenerFragment(Activity activity) {
+
+        FragmentManager fragmentManager = activity.getFragmentManager();
+        return getLifeListenerFragment(fragmentManager);
+    }
+
+    /**
+     * 添加空白fragment
+     * @param manager
+     * @return
+     */
+    private static LifeListenerFragment getLifeListenerFragment(FragmentManager manager) {
+        LifeListenerFragment fragment = (LifeListenerFragment) manager.findFragmentByTag(TAG);
+        if (fragment == null) {
+            fragment = new LifeListenerFragment();
+            manager.beginTransaction().add(fragment, TAG).commitAllowingStateLoss();
+        }
+
+        return fragment;
+    }
+
+    static class MediaLifeListener implements LifeListener{
+
+        private MediaManager mediaManager;
+
+        public MediaLifeListener(MediaManager mediaManager) {
+            this.mediaManager = mediaManager;
+        }
+
+        @Override
+        public void onCreate(Bundle bundle) {
+
+        }
+
+        @Override
+        public void onStart() {
+
+        }
+
+        @Override
+        public void onResume() {
+
+        }
+
+        @Override
+        public void onPause() {
+
+        }
+
+        @Override
+        public void onStop() {
+
+        }
+
+        @Override
+        public void onDestroy() {
+
+            Log.i(TAG, "onDestroy: ");
+            if (mediaManager != null) {
+                mediaManager.releasePlayer();
+            }
+
+        }
+    }
+
 
 }

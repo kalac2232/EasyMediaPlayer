@@ -1,6 +1,6 @@
 package cn.kalac.easymediaplayer;
 
-import android.app.Activity;
+import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
 
@@ -15,40 +15,73 @@ public class MediaManager {
 
     private static MediaPlayer mMediaPlayer;
 
+    private Context mContext;
+    private MediaOperator mMediaOperator;
+
+    public MediaManager(Context context) {
+        mContext = context;
+    }
+
     /**
      * 从资源文件中进行加载
      * @param resId
      */
-    public void load(int resId) {
-        mMediaPlayer = MediaFactory.getMediaPlayer();
+    public MediaOperator load(int resId) {
+        mMediaPlayer = MediaFactory.getMediaPlayer(mContext,resId);
+        return new MediaOperator(mMediaPlayer);
     }
 
     /**
      * 从网络地址中进行加载
      * @param url
      */
-    public void load(String url) {
-
+    public MediaOperator load(String url) {
+        mMediaPlayer = MediaFactory.getMediaPlayer(url);
+        return new MediaOperator(mMediaPlayer);
     }
 
-    public void load(Uri uri) {
-
+    public MediaOperator load(Uri uri) {
+        mMediaPlayer = MediaFactory.getMediaPlayer(mContext,uri);
+        return new MediaOperator(mMediaPlayer);
     }
 
 
     public void load(List<String> list) {
 
-
-
     }
 
-    public void start() {
-        if (mMediaPlayer == null) {
-            throw new IllegalArgumentException("You must load res first");
+    /**
+     * 从asset中加载资源
+     * @param fileName
+     */
+    public MediaOperator loadAssets(String fileName) {
+
+        mMediaPlayer = MediaFactory.getMediaPlayerFromAssets(mContext,fileName);
+        return new MediaOperator(mMediaPlayer);
+    }
+
+    public void releasePlayer() {
+        if (mMediaPlayer != null) {
+            mMediaPlayer.stop();
+
+            //关键语句
+            mMediaPlayer.reset();
+
+            mMediaPlayer.release();
+            mMediaPlayer = null;
         }
 
-        mMediaPlayer.start();
     }
 
+    public void setMediaCompleteListener(final MediaCompleteListener mediaCompleteListener) {
 
+        if (mMediaPlayer != null && mediaCompleteListener != null) {
+            mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mediaCompleteListener.onComplete();
+                }
+            });
+        }
+    }
 }
