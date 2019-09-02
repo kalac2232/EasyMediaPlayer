@@ -18,6 +18,8 @@ public class MediaManager {
     private Context mContext;
     private MediaOperator mMediaOperator;
 
+    private EasyMediaListener mEasyMediaListener;
+
     public MediaManager(Context context) {
         mContext = context;
     }
@@ -28,8 +30,10 @@ public class MediaManager {
      */
     public MediaOperator load(int resId) {
         mMediaPlayer = MediaFactory.getMediaPlayer(mContext,resId);
+        addListener();
         return new MediaOperator(mMediaPlayer);
     }
+
 
     /**
      * 从网络地址中进行加载
@@ -73,15 +77,30 @@ public class MediaManager {
 
     }
 
-    public void setMediaCompleteListener(final MediaCompleteListener mediaCompleteListener) {
+    public MediaManager listener(final EasyMediaListener easyMediaListener) {
+        mEasyMediaListener = easyMediaListener;
+        return this;
+    }
 
-        if (mMediaPlayer != null && mediaCompleteListener != null) {
-            mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mediaCompleteListener.onComplete();
+
+    private void addListener() {
+        mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                if (mEasyMediaListener != null) {
+                    mEasyMediaListener.onComplete();
                 }
-            });
-        }
+            }
+        });
+
+        mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                if (mEasyMediaListener != null) {
+                    mEasyMediaListener.onPrepare();
+                }
+            }
+        });
+
     }
 }
