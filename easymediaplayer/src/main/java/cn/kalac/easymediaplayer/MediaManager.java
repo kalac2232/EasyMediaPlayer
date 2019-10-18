@@ -4,6 +4,8 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
 
+import androidx.annotation.RawRes;
+
 import java.util.List;
 
 /**
@@ -13,7 +15,7 @@ import java.util.List;
 public class MediaManager {
 
 
-    private static MediaPlayer mMediaPlayer;
+    private MediaPlayer mMediaPlayer;
 
     private Context mContext;
     private MediaOperator mMediaOperator;
@@ -28,9 +30,10 @@ public class MediaManager {
      * 从资源文件中进行加载
      * @param resId
      */
-    public MediaOperator load(int resId) {
+    public MediaOperator load(@RawRes int resId) {
         mMediaPlayer = MediaFactory.getMediaPlayer(mContext,resId);
-        addListener();
+        addOptions();
+
         return new MediaOperator(mMediaPlayer);
     }
 
@@ -41,17 +44,20 @@ public class MediaManager {
      */
     public MediaOperator load(String url) {
         mMediaPlayer = MediaFactory.getMediaPlayer(url);
+        addOptions();
         return new MediaOperator(mMediaPlayer);
     }
 
     public MediaOperator load(Uri uri) {
         mMediaPlayer = MediaFactory.getMediaPlayer(mContext,uri);
+        addOptions();
         return new MediaOperator(mMediaPlayer);
     }
 
 
-    public void load(List<String> list) {
-
+    public MediaOperator load(List list) {
+        addOptions();
+        return new MediaOperator(mMediaPlayer);
     }
 
     /**
@@ -74,14 +80,28 @@ public class MediaManager {
             mMediaPlayer.release();
             mMediaPlayer = null;
         }
-
     }
 
     public MediaManager listener(final EasyMediaListener easyMediaListener) {
         mEasyMediaListener = easyMediaListener;
+        addListener();
         return this;
     }
 
+    /**
+     * 添加额外的参数信息
+     * @param easyMediaOptions
+     * @return
+     */
+    public MediaManager options(final EasyMediaOptions easyMediaOptions) {
+
+        return this;
+    }
+
+
+    private void addOptions() {
+
+    }
 
     private void addListener() {
         mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {

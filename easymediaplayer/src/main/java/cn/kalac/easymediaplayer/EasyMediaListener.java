@@ -4,7 +4,7 @@ package cn.kalac.easymediaplayer;
  * @author kalac.
  * @date 2019/9/2 21:29
  */
-public class EasyMediaListener {
+public abstract class EasyMediaListener {
 
     public void onPrepare() {
 
@@ -14,7 +14,5 @@ public class EasyMediaListener {
 
     }
 
-    public void onComplete() {
-
-    }
+    public abstract void onComplete();
 }

@@ -65,49 +65,6 @@ public class EasyMediaPlayer {
         return fragment;
     }
 
-    static class MediaLifeListener implements LifeListener{
-
-        private MediaManager mediaManager;
-
-        public MediaLifeListener(MediaManager mediaManager) {
-            this.mediaManager = mediaManager;
-        }
-
-        @Override
-        public void onCreate(Bundle bundle) {
-
-        }
-
-        @Override
-        public void onStart() {
-
-        }
-
-        @Override
-        public void onResume() {
-
-        }
-
-        @Override
-        public void onPause() {
-
-        }
-
-        @Override
-        public void onStop() {
-
-        }
-
-        @Override
-        public void onDestroy() {
-
-            Log.i(TAG, "onDestroy: ");
-            if (mediaManager != null) {
-                mediaManager.releasePlayer();
-            }
-
-        }
-    }
 
 
 }

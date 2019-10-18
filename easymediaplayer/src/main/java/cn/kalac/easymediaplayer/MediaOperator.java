@@ -13,19 +13,31 @@ public class MediaOperator {
 
     private static MediaPlayer mMediaPlayer;
 
+    private boolean isReadyPlay = false;
+
     public MediaOperator(MediaPlayer mediaPlayer) {
         mMediaPlayer = mediaPlayer;
+
+        setOnPreparedListener();
+        mMediaPlayer.prepareAsync();
+    }
+
+    private void setOnPreparedListener() {
+        mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                isReadyPlay = true;
+            }
+        });
     }
 
     public void start() {
         if (mMediaPlayer == null) {
             throw new IllegalArgumentException("You must load res first");
         }
-        try {
-            mMediaPlayer.prepare();
-            mMediaPlayer.start();
-        } catch (IOException e) {
-            e.printStackTrace();
+
+        if (isReadyPlay) {
+            startPlay();
         }
 
     }
@@ -38,6 +50,10 @@ public class MediaOperator {
         if (mMediaPlayer.isPlaying()) {
             mMediaPlayer.pause();
         }
+    }
+
+    private void startPlay() {
+        mMediaPlayer.start();
     }
 
 }
