@@ -38,6 +38,7 @@ public class MediaManager {
      */
     public MediaOperator load(@RawRes int resId) {
         mMediaPlayer.setDataSource(resId);
+        mMediaPlayer.prepareAsync();
         addOptions();
 
         return new MediaOperator(mMediaPlayer);
@@ -50,12 +51,14 @@ public class MediaManager {
      */
     public MediaOperator load(String url) {
         mMediaPlayer.setDataSource(url);
+        mMediaPlayer.prepareAsync();
         addOptions();
         return new MediaOperator(mMediaPlayer);
     }
 
     public MediaOperator load(Uri uri) {
         mMediaPlayer.setDataSource(mContext,uri);
+        mMediaPlayer.prepareAsync();
         addOptions();
         return new MediaOperator(mMediaPlayer);
     }

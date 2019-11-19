@@ -22,7 +22,9 @@ public class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletio
 
     private static final String TAG = "EMediaPlayer";
     private final Context mContext;
-    List<EasyMediaListener> mListeners;
+    private List<EasyMediaListener> mListeners;
+    private boolean isPrepared = false;
+    private boolean autoPlayAfterPrepared = false;
 
     public EMediaPlayer(Context context, List<EasyMediaListener> listeners) {
         mContext = context;
@@ -32,7 +34,17 @@ public class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletio
         setOnErrorListener(this);
     }
 
+    @Override
+    public void start() {
+        if (!isPrepared) {
+            autoPlayAfterPrepared = true;
+        }
 
+        super.start();
+        for (EasyMediaListener mListener : mListeners) {
+            mListener.onStart();
+        }
+    }
 
     public void setDataSource(@RawRes int resId)  {
         AssetFileDescriptor afd = mContext.getResources().openRawResourceFd(resId);
@@ -43,11 +55,17 @@ public class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletio
             setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
         } catch (IOException e) {
             e.printStackTrace();
+            for (EasyMediaListener mListener : mListeners) {
+                mListener.onError(e.getMessage());
+            }
         }
         try {
             afd.close();
         } catch (IOException e) {
             e.printStackTrace();
+            for (EasyMediaListener mListener : mListeners) {
+                mListener.onError(e.getMessage());
+            }
         }
     }
 
@@ -57,6 +75,9 @@ public class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletio
             super.setDataSource(path);
         } catch (IOException e) {
             e.printStackTrace();
+            for (EasyMediaListener mListener : mListeners) {
+                mListener.onError(e.getMessage());
+            }
         }
     }
 
@@ -66,6 +87,9 @@ public class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletio
             super.setDataSource(context, uri);
         } catch (IOException e) {
             e.printStackTrace();
+            for (EasyMediaListener mListener : mListeners) {
+                mListener.onError(e.getMessage());
+            }
         }
     }
 
@@ -75,6 +99,9 @@ public class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletio
             fd = mContext.getAssets().openFd(fileName);
         } catch (IOException e) {
             e.printStackTrace();
+            for (EasyMediaListener mListener : mListeners) {
+                mListener.onError(e.getMessage());
+            }
         }
 
         try {
@@ -83,6 +110,9 @@ public class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletio
             }
         } catch (IOException e) {
             e.printStackTrace();
+            for (EasyMediaListener mListener : mListeners) {
+                mListener.onError(e.getMessage());
+            }
         }
 
         try {
@@ -91,6 +121,9 @@ public class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletio
             }
         } catch (IOException e) {
             e.printStackTrace();
+            for (EasyMediaListener mListener : mListeners) {
+                mListener.onError(e.getMessage());
+            }
         }
 
     }
@@ -104,8 +137,13 @@ public class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletio
 
     @Override
     public void onPrepared(MediaPlayer mp) {
+        isPrepared = true;
         for (EasyMediaListener mListener : mListeners) {
             mListener.onPrepare();
+        }
+
+        if (autoPlayAfterPrepared) {
+            start();
         }
     }
 
@@ -157,7 +195,7 @@ public class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletio
                 Log.d(TAG, extraErrorMsg);
                 break;
             case 802:
-                extraErrorMsg = "MEDIA_INFO_METADATA_UPDATE";
+                extraErrorMsg = "MEDIA_INFO_METADATA_UPDATE ";
                 Log.d(TAG, extraErrorMsg);
                 break;
             case 801:
@@ -177,6 +215,11 @@ public class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletio
                 Log.d(TAG, extraErrorMsg);
                 break;
         }
+
+        for (EasyMediaListener mListener : mListeners) {
+            mListener.onError(whatErrorMsg + "---" + extraErrorMsg);
+        }
+
         return false;
     }
 }

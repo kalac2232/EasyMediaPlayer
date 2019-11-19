@@ -15,22 +15,8 @@ public class MediaOperator {
 
     private static MediaPlayer mMediaPlayer;
 
-    private boolean isReadyPlay = false;
-
     public MediaOperator(MediaPlayer mediaPlayer) {
         mMediaPlayer = mediaPlayer;
-
-        setOnPreparedListener();
-        mMediaPlayer.prepareAsync();
-    }
-
-    private void setOnPreparedListener() {
-        mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                isReadyPlay = true;
-            }
-        });
     }
 
     public void start() {
@@ -38,9 +24,7 @@ public class MediaOperator {
             throw new IllegalArgumentException("You must load res first");
         }
 
-        if (isReadyPlay) {
-            startPlay();
-        }
+        mMediaPlayer.start();
 
     }
 
@@ -55,7 +39,7 @@ public class MediaOperator {
     }
 
     private void startPlay() {
-        mMediaPlayer.start();
+
     }
 
 }
