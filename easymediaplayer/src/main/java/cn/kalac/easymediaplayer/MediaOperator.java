@@ -6,6 +6,8 @@ import android.util.Log;
 import java.io.IOException;
 
 /**
+ * 音频操作类对象
+ * 功能：播放、暂停、快进等
  * @author kalac.
  * @date 2019/8/18 15:06
  */

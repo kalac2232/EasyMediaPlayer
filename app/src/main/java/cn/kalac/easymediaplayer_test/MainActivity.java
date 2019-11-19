@@ -1,4 +1,4 @@
-package cn.kalac.easymediaplayer;
+package cn.kalac.easymediaplayer_test;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -7,6 +7,9 @@ import android.os.Handler;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import cn.kalac.easymediaplayer.EasyMediaPlayer;
+
 
 public class MainActivity extends AppCompatActivity {
 

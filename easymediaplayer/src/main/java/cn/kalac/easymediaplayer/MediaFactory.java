@@ -11,6 +11,7 @@ import java.io.IOException;
  * @author kalac.
  * @date 2019/8/14 22:38
  */
+@Deprecated
 public class MediaFactory {
 
     /**
@@ -20,7 +21,7 @@ public class MediaFactory {
     public static MediaPlayer getMediaPlayer(Context context, int resId) {
 
 
-        return MediaPlayer.create(context, resId);
+        return EMediaPlayer.create(context, resId);
     }
 
     public static MediaPlayer getMediaPlayer(String url) {
@@ -31,7 +32,6 @@ public class MediaFactory {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
         return mp;
     }

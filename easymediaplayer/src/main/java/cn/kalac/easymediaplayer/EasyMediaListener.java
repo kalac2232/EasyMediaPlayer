@@ -15,4 +15,8 @@ public abstract class EasyMediaListener {
     }
 
     public abstract void onComplete();
+
+    public void onError(String errorMessage) {
+
+    }
 }

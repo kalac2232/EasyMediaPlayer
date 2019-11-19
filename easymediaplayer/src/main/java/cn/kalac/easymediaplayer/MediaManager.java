@@ -1,11 +1,13 @@
 package cn.kalac.easymediaplayer;
 
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
 import android.net.Uri;
 
 import androidx.annotation.RawRes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,15 +17,19 @@ import java.util.List;
 public class MediaManager {
 
 
-    private MediaPlayer mMediaPlayer;
+    private EMediaPlayer mMediaPlayer;
 
     private Context mContext;
     private MediaOperator mMediaOperator;
 
     private EasyMediaListener mEasyMediaListener;
+    private final ArrayList<EasyMediaListener> mListeners;
 
     public MediaManager(Context context) {
         mContext = context;
+        mListeners = new ArrayList<>();
+        mListeners.add(new Listener());
+        mMediaPlayer = new EMediaPlayer(context,mListeners);
     }
 
     /**
@@ -31,7 +37,7 @@ public class MediaManager {
      * @param resId
      */
     public MediaOperator load(@RawRes int resId) {
-        mMediaPlayer = MediaFactory.getMediaPlayer(mContext,resId);
+        mMediaPlayer.setDataSource(resId);
         addOptions();
 
         return new MediaOperator(mMediaPlayer);
@@ -43,13 +49,13 @@ public class MediaManager {
      * @param url
      */
     public MediaOperator load(String url) {
-        mMediaPlayer = MediaFactory.getMediaPlayer(url);
+        mMediaPlayer.setDataSource(url);
         addOptions();
         return new MediaOperator(mMediaPlayer);
     }
 
     public MediaOperator load(Uri uri) {
-        mMediaPlayer = MediaFactory.getMediaPlayer(mContext,uri);
+        mMediaPlayer.setDataSource(mContext,uri);
         addOptions();
         return new MediaOperator(mMediaPlayer);
     }
@@ -66,7 +72,9 @@ public class MediaManager {
      */
     public MediaOperator loadAssets(String fileName) {
 
-        mMediaPlayer = MediaFactory.getMediaPlayerFromAssets(mContext,fileName);
+
+        mMediaPlayer.setAssetsDataSource(fileName);
+
         return new MediaOperator(mMediaPlayer);
     }
 
@@ -84,7 +92,7 @@ public class MediaManager {
 
     public MediaManager listener(final EasyMediaListener easyMediaListener) {
         mEasyMediaListener = easyMediaListener;
-        addListener();
+        mListeners.add(mEasyMediaListener);
         return this;
     }
 
@@ -103,24 +111,11 @@ public class MediaManager {
 
     }
 
-    private void addListener() {
-        mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                if (mEasyMediaListener != null) {
-                    mEasyMediaListener.onComplete();
-                }
-            }
-        });
+    private class Listener extends EasyMediaListener {
 
-        mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                if (mEasyMediaListener != null) {
-                    mEasyMediaListener.onPrepare();
-                }
-            }
-        });
+        @Override
+        public void onComplete() {
 
+        }
     }
 }
