@@ -9,10 +9,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.RawRes;
 
-import java.io.FileDescriptor;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author ghn
@@ -22,13 +19,15 @@ public class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletio
 
     private static final String TAG = "EMediaPlayer";
     private final Context mContext;
-    private List<EasyMediaListener> mListeners;
+
+    MediaManager.ManagerListener mManagerListener;
     private boolean isPrepared = false;
     private boolean autoPlayAfterPrepared = false;
+    private Object mPlayingRes;
 
-    public EMediaPlayer(Context context, List<EasyMediaListener> listeners) {
+    public EMediaPlayer(Context context, MediaManager.ManagerListener managerListener) {
         mContext = context;
-        mListeners = listeners;
+        mManagerListener = managerListener;
         setOnCompletionListener(this);
         setOnPreparedListener(this);
         setOnErrorListener(this);
@@ -36,82 +35,118 @@ public class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletio
 
     @Override
     public void start() {
+
         if (!isPrepared) {
             autoPlayAfterPrepared = true;
+            return;
+        }
+        Log.i(TAG, "start: ");
+        super.start();
+        if (mManagerListener != null) {
+            mManagerListener.onStart(mPlayingRes);
         }
 
-        super.start();
-        for (EasyMediaListener mListener : mListeners) {
-            mListener.onStart();
-        }
+        isPrepared = false;
+        autoPlayAfterPrepared = false;
     }
 
-    public void setDataSource(@RawRes int resId)  {
+    public void setDataSource(@RawRes int resId) {
+        calibratePlayStatus();
+
         AssetFileDescriptor afd = mContext.getResources().openRawResourceFd(resId);
         if (afd == null) {
+            if (mManagerListener != null) {
+                mManagerListener.onError(mPlayingRes,"res open error!");
+            }
+
             return;
         }
         try {
             setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+            mPlayingRes = resId;
+
         } catch (IOException e) {
             e.printStackTrace();
-            for (EasyMediaListener mListener : mListeners) {
-                mListener.onError(e.getMessage());
+            if (mManagerListener != null) {
+                mManagerListener.onError(mPlayingRes,e.getMessage());
             }
         }
         try {
             afd.close();
         } catch (IOException e) {
             e.printStackTrace();
-            for (EasyMediaListener mListener : mListeners) {
-                mListener.onError(e.getMessage());
+            if (mManagerListener != null) {
+                mManagerListener.onError(mPlayingRes,e.getMessage());
             }
         }
     }
+
+    /**
+     * 判断是否符合播放条件
+     */
+    private void calibratePlayStatus() {
+        if (isPlaying()) {
+            stop();
+            reset();
+            if (mManagerListener != null) {
+                mManagerListener.onError(mPlayingRes,"mediaplayer is interrupt");
+            }
+        }
+    }
+
 
     @Override
     public void setDataSource(String path) {
+        calibratePlayStatus();
         try {
             super.setDataSource(path);
+            mPlayingRes = path;
+
         } catch (IOException e) {
             e.printStackTrace();
-            for (EasyMediaListener mListener : mListeners) {
-                mListener.onError(e.getMessage());
+            if (mManagerListener != null) {
+                mManagerListener.onError(mPlayingRes,e.getMessage());
             }
         }
     }
 
+
     @Override
     public void setDataSource(@NonNull Context context, @NonNull Uri uri) {
+        calibratePlayStatus();
         try {
             super.setDataSource(context, uri);
+            mPlayingRes = uri;
+
         } catch (IOException e) {
             e.printStackTrace();
-            for (EasyMediaListener mListener : mListeners) {
-                mListener.onError(e.getMessage());
+            if (mManagerListener != null) {
+                mManagerListener.onError(mPlayingRes,e.getMessage());
             }
         }
     }
 
     public void setAssetsDataSource(String fileName) {
+        calibratePlayStatus();
         AssetFileDescriptor fd = null;
         try {
             fd = mContext.getAssets().openFd(fileName);
         } catch (IOException e) {
             e.printStackTrace();
-            for (EasyMediaListener mListener : mListeners) {
-                mListener.onError(e.getMessage());
+            if (mManagerListener != null) {
+                mManagerListener.onError(mPlayingRes,e.getMessage());
             }
         }
 
         try {
             if (fd != null) {
                 setDataSource(fd.getFileDescriptor(), fd.getStartOffset(), fd.getLength());
+                mPlayingRes = fileName;
             }
         } catch (IOException e) {
             e.printStackTrace();
-            for (EasyMediaListener mListener : mListeners) {
-                mListener.onError(e.getMessage());
+            if (mManagerListener != null) {
+                mManagerListener.onError(mPlayingRes,e.getMessage());
             }
         }
 
@@ -121,8 +156,8 @@ public class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletio
             }
         } catch (IOException e) {
             e.printStackTrace();
-            for (EasyMediaListener mListener : mListeners) {
-                mListener.onError(e.getMessage());
+            if (mManagerListener != null) {
+                mManagerListener.onError(mPlayingRes,e.getMessage());
             }
         }
 
@@ -130,16 +165,21 @@ public class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletio
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        for (EasyMediaListener mListener : mListeners) {
-            mListener.onComplete();
+        Log.i(TAG, "onCompletion: ");
+        if (mManagerListener != null) {
+            mManagerListener.onComplete(mPlayingRes);
         }
+        reset();
+
     }
+
 
     @Override
     public void onPrepared(MediaPlayer mp) {
+        Log.i(TAG, "onPrepared: ");
         isPrepared = true;
-        for (EasyMediaListener mListener : mListeners) {
-            mListener.onPrepare();
+        if (mManagerListener != null) {
+            mManagerListener.onPrepare(mPlayingRes);
         }
 
         if (autoPlayAfterPrepared) {
@@ -149,77 +189,82 @@ public class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletio
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
+
+        Log.i(TAG, "onError: ");
+
+        //clearStatus();
+
         String whatErrorMsg;
         switch (what) {
             case -1004:
                 whatErrorMsg = "MEDIA_ERROR_IO";
-                Log.d(TAG, whatErrorMsg);
+                //Log.d(TAG, whatErrorMsg);
                 break;
             case -1007:
                 whatErrorMsg = "MEDIA_ERROR_MALFORMED";
-                Log.d(TAG, whatErrorMsg);
+                //Log.d(TAG, whatErrorMsg);
                 break;
             case 200:
                 whatErrorMsg = "MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK";
-                Log.d(TAG, whatErrorMsg);
+                //Log.d(TAG, whatErrorMsg);
                 break;
             case 100:
                 whatErrorMsg = "MEDIA_ERROR_SERVER_DIED";
-                Log.d(TAG, whatErrorMsg);
+                //Log.d(TAG, whatErrorMsg);
                 break;
             case -110:
                 whatErrorMsg = "MEDIA_ERROR_TIMED_OUT";
-                Log.d(TAG, whatErrorMsg);
+                //Log.d(TAG, whatErrorMsg);
                 break;
             case -1010:
                 whatErrorMsg = "MEDIA_ERROR_UNSUPPORTED";
-                Log.d(TAG, whatErrorMsg);
+                //Log.d(TAG, whatErrorMsg);
                 break;
-                default:
-                    whatErrorMsg = "MEDIA_ERROR_UNKNOWN";
-                    Log.d(TAG, whatErrorMsg);
-                    break;
+            default:
+                whatErrorMsg = "MEDIA_ERROR_UNKNOWN: " + what;
+                //Log.d(TAG, whatErrorMsg);
+                break;
         }
         String extraErrorMsg;
         switch (extra) {
             case 800:
                 extraErrorMsg = "MEDIA_INFO_BAD_INTERLEAVING";
-                Log.d(TAG, extraErrorMsg);
+                //Log.d(TAG, extraErrorMsg);
                 break;
             case 702:
                 extraErrorMsg = "MEDIA_INFO_BUFFERING_END";
-                Log.d(TAG, extraErrorMsg);
+                //Log.d(TAG, extraErrorMsg);
                 break;
             case 701:
                 extraErrorMsg = "MEDIA_INFO_METADATA_UPDATE";
-                Log.d(TAG, extraErrorMsg);
+                //Log.d(TAG, extraErrorMsg);
                 break;
             case 802:
                 extraErrorMsg = "MEDIA_INFO_METADATA_UPDATE ";
-                Log.d(TAG, extraErrorMsg);
+                //Log.d(TAG, extraErrorMsg);
                 break;
             case 801:
                 extraErrorMsg = "MEDIA_INFO_NOT_SEEKABLE";
-                Log.d(TAG, extraErrorMsg);
+                //Log.d(TAG, extraErrorMsg);
                 break;
             case 3:
                 extraErrorMsg = "MEDIA_INFO_VIDEO_RENDERING_START";
-                Log.d(TAG, extraErrorMsg);
+                //Log.d(TAG, extraErrorMsg);
                 break;
             case 700:
                 extraErrorMsg = "MEDIA_INFO_VIDEO_TRACK_LAGGING";
-                Log.d(TAG, extraErrorMsg);
+                //Log.d(TAG, extraErrorMsg);
                 break;
             default:
-                extraErrorMsg = "MEDIA_INFO_UNKNOWN";
-                Log.d(TAG, extraErrorMsg);
+                extraErrorMsg = "MEDIA_INFO_UNKNOWN: " + extra;
+                //Log.d(TAG, extraErrorMsg);
                 break;
         }
 
-        for (EasyMediaListener mListener : mListeners) {
-            mListener.onError(whatErrorMsg + "---" + extraErrorMsg);
+        if (mManagerListener != null) {
+            mManagerListener.onError(mPlayingRes,whatErrorMsg + "---" + extraErrorMsg);
         }
-
-        return false;
+        //处理错误,否则会调用onComplete();
+        return true;
     }
 }

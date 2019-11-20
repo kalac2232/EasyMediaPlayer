@@ -14,16 +14,13 @@ public class EasyMediaPlayer {
 
     private static final String TAG = "EasyMediaPlayer";
 
-    private static EasyMediaPlayer mEasyMediaPlayer;
-
-
     public static MediaManager with(Context context) {
 
         if (context == null) {
             throw new NullPointerException("context is null");
         }
 
-        MediaManager mediaManager = new MediaManager(context);
+        MediaManager mediaManager = MediaManager.newInstance(context);
 
         if (context instanceof Activity) {
             addLifeListener((Activity) context,mediaManager);

@@ -38,8 +38,12 @@ public class MediaOperator {
         }
     }
 
-    private void startPlay() {
+    public void volume(float volume) {
+        volume(volume,volume);
+    }
 
+    public void volume(float left,float right) {
+        mMediaPlayer.setVolume(left,right);
     }
 
 }

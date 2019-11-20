@@ -2,6 +2,7 @@ package cn.kalac.easymediaplayer_test;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -15,29 +16,51 @@ import cn.kalac.easymediaplayer.EasyMediaPlayer;
 
 public class MainActivity extends AppCompatActivity {
 
+    private Context mContext;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContext = this;
         setContentView(R.layout.activity_main);
 
-        final String url = "http://m10.music.126.net/20191119230535/d924aea7765136c899283a31fd25c5ab/ymusic/d60e/d53a/a031/1578f4093912b3c1f41a0bfd6c10115d.mp3";
-        int res = R.raw.great;
-        List list = new ArrayList();
-        list.add(url);
-        list.add(res);
+        final String url = "http://www.kalac.cn:8080/music.mp3";
+        final int res = R.raw.great;
 
         EasyMediaPlayer.with(this).listener(new EasyMediaListener() {
             @Override
             public void onComplete() {
-                Log.i("---", "onComplete: ");
+                Log.i("---", "onComplete:1 ");
             }
 
             @Override
             public void onError(String errorMessage) {
                 super.onError(errorMessage);
-                Log.e("---", "onError: " + errorMessage);
+                Log.e("---", "onError1: " + errorMessage);
             }
         }).load(url).start();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                EasyMediaPlayer.with(mContext).listener(new EasyMediaListener() {
+                    @Override
+                    public void onComplete() {
+                        Log.i("---", "onComplete:2");
+                    }
+
+                    @Override
+                    public void onError(String errorMessage) {
+                        super.onError(errorMessage);
+                        Log.e("---", "onError2: " + errorMessage);
+                    }
+                }).load(res).start();
+            }
+        },6000);
+
+
+
+
 
     }
 }
