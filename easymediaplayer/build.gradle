@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release' // 添加bintray插件
 
 android {
     compileSdkVersion 28
@@ -29,4 +30,14 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+}
+// 配置2
+publish {
+    userOrg = 'kalac2232'             // Binary用户名
+    repoName = 'maven'          // Binary上的刚才新建的仓库名（Repository）
+    groupId = 'cn.kalac'        // 依赖名compile 'x:y:z '中的包名x
+    artifactId = 'EasyMediaPlayer'        // 依赖名compile 'x:y:z '中的项目名y
+    publishVersion = '0.0.2'          // 依赖名compile 'x:y:z '中的版本号z
+    desc = 'a easy use mediaplayer on android'            // 对该开源组件的说明
+    website = 'https://github.com/kalac2232/EasyMediaPlayer'  // VCS地址，即填写项目上传的Github地址
 }
