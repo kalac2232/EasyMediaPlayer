@@ -6,8 +6,6 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.RawRes;
 
 import java.io.IOException;
 
@@ -50,7 +48,7 @@ public class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletio
         autoPlayAfterPrepared = false;
     }
 
-    public void setDataSource(@RawRes int resId) {
+    public void setDataSource(int resId) {
         calibratePlayStatus();
 
         AssetFileDescriptor afd = mContext.getResources().openRawResourceFd(resId);
@@ -112,7 +110,7 @@ public class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletio
 
 
     @Override
-    public void setDataSource(@NonNull Context context, @NonNull Uri uri) {
+    public void setDataSource(Context context, Uri uri) {
         calibratePlayStatus();
         try {
             super.setDataSource(context, uri);

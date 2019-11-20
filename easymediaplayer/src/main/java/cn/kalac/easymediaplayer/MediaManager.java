@@ -3,8 +3,6 @@ package cn.kalac.easymediaplayer;
 import android.content.Context;
 import android.net.Uri;
 
-import androidx.annotation.RawRes;
-
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,7 +54,7 @@ public class MediaManager {
      * 从资源文件中进行加载
      * @param resId
      */
-    public MediaOperator load(@RawRes int resId) {
+    public MediaOperator load(int resId) {
         addListener(resId);
 
         mMediaPlayer.setDataSource(resId);
