@@ -15,6 +15,8 @@ import cn.kalac.easymediaplayer.EasyMediaPlayer;
 
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "MainActivity";
+
 
     private Context mContext;
 
@@ -24,19 +26,19 @@ public class MainActivity extends AppCompatActivity {
         mContext = this;
         setContentView(R.layout.activity_main);
 
-        final String url = "http://www.kalac.cn:8080/music.mp3";
         final int res = R.raw.great;
+        final String url = "http://www.kalac.cn:8080/music.mp3";
 
         EasyMediaPlayer.with(this).listener(new EasyMediaListener() {
             @Override
             public void onComplete() {
-                Log.i("---", "onComplete:1 ");
+                Log.i("---", "onComplete:");
             }
 
             @Override
             public void onError(String errorMessage) {
                 super.onError(errorMessage);
-                Log.e("---", "onError1: " + errorMessage);
+                Log.e("---", "onError: " + errorMessage);
             }
         }).load(url).start();
 
