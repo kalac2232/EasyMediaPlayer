@@ -40,6 +40,17 @@ dependencies {
     EasyMediaPlayer.with(mContext).load(R.raw.music).start();
     ```
 3. 其他`Assets`等资源同理
+### 暂停等其他操作
+在调用`load`方法后，会返回一个`MediaOperator`对象，使用该对象即可进行对当前`res`音频的操作管理
+1. 暂停
+    ```
+    String url = "http://www.kalac.cn:8080/music.mp3";
+
+    MediaOperator mediaOperator = EasyMediaPlayer.with(this).load(url);
+    mediaOperator.start();
+    //... 
+    mediaOperator.pause();
+    ```
 ### 添加监听
 ```
 EasyMediaPlayer.with(this).listener(new EasyMediaListener() {
@@ -66,6 +77,7 @@ public void onError(String errorMessage) {
 ### 资源释放
 **不需要关系资源释放的问题，EasyMediaPlayer会自动进行释放**
 ## Todo
-1. 可灵活配置的选项
-2. 按序播放列表中音频
-3. 音频焦点检测
+1. 添加更多的对音频的操作
+2. 可灵活配置的选项
+3. 按序播放列表中音频
+4. 音频焦点检测
