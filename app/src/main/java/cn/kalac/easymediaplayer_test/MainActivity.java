@@ -12,6 +12,7 @@ import java.util.List;
 
 import cn.kalac.easymediaplayer.EasyMediaListener;
 import cn.kalac.easymediaplayer.EasyMediaPlayer;
+import cn.kalac.easymediaplayer.MediaOperator;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -29,18 +30,10 @@ public class MainActivity extends AppCompatActivity {
         final int res = R.raw.great;
         final String url = "http://www.kalac.cn:8080/music.mp3";
 
-        EasyMediaPlayer.with(this).listener(new EasyMediaListener() {
-            @Override
-            public void onComplete() {
-                Log.i("---", "onComplete:");
-            }
+        MediaOperator mediaOperator = EasyMediaPlayer.with(this).load(url);
+        mediaOperator.start();
 
-            @Override
-            public void onError(String errorMessage) {
-                super.onError(errorMessage);
-                Log.e("---", "onError: " + errorMessage);
-            }
-        }).load(url).start();
+        mediaOperator.pause();
 
         new Handler().postDelayed(new Runnable() {
             @Override
