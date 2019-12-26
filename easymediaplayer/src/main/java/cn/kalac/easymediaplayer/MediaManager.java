@@ -2,6 +2,7 @@ package cn.kalac.easymediaplayer;
 
 import android.content.Context;
 import android.net.Uri;
+import android.text.TextUtils;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -55,6 +56,9 @@ public class MediaManager {
      * @param resId
      */
     public MediaOperator load(int resId) {
+        if (resId < 0) {
+            throw new IllegalStateException("check your resId");
+        }
         addListener(resId);
 
         mMediaPlayer.setDataSource(resId);
@@ -85,7 +89,9 @@ public class MediaManager {
      * @param url
      */
     public MediaOperator load(String url) {
-
+        if (TextUtils.isEmpty(url)) {
+            throw new IllegalStateException("check your url");
+        }
         addListener(url);
 
         mMediaPlayer.setDataSource(url);
@@ -95,7 +101,9 @@ public class MediaManager {
     }
 
     public MediaOperator load(Uri uri) {
-
+        if (uri == null) {
+            throw new IllegalStateException("check your uri");
+        }
         addListener(uri);
 
         mMediaPlayer.setDataSource(mContext,uri);

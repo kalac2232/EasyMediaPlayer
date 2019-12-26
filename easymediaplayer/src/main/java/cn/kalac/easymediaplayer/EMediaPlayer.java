@@ -13,7 +13,7 @@ import java.io.IOException;
  * @author ghn
  * @date 2019/11/19 17:21
  */
-public class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener {
+class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener {
 
     private static final String TAG = "EMediaPlayer";
     private final Context mContext;

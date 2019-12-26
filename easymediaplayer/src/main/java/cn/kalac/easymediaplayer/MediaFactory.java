@@ -12,7 +12,7 @@ import java.io.IOException;
  * @date 2019/8/14 22:38
  */
 @Deprecated
-public class MediaFactory {
+class MediaFactory {
 
     /**
      * 根据资源类型的不同进行加载播放器

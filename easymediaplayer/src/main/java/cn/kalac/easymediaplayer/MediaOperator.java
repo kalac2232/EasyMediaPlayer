@@ -46,4 +46,8 @@ public class MediaOperator {
         mMediaPlayer.setVolume(left,right);
     }
 
+    public void seekTo(int msec) {
+        mMediaPlayer.seekTo(msec);
+    }
+
 }
