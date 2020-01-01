@@ -43,9 +43,6 @@ class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletionListen
         if (mManagerListener != null) {
             mManagerListener.onStart(mPlayingRes);
         }
-
-        isPrepared = false;
-        autoPlayAfterPrepared = false;
     }
 
     public void setDataSource(int resId) {
@@ -171,6 +168,12 @@ class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletionListen
 
     }
 
+    @Override
+    public void reset() {
+        super.reset();
+        isPrepared = false;
+        autoPlayAfterPrepared = false;
+    }
 
     @Override
     public void onPrepared(MediaPlayer mp) {

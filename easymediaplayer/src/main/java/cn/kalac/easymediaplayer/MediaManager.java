@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +19,9 @@ public class MediaManager {
 
     private Context mContext;
 
+    /**
+     * 一个播放资源对应的监听
+     */
     private HashMap<Object,List<EasyMediaListener>> mResListenerMap;
 
     private static WeakHashMap<Context,MediaManager> mMediaManagerMap;
@@ -131,6 +133,15 @@ public class MediaManager {
         return new MediaOperator(mMediaPlayer);
     }
 
+    /**
+     * 返回一个还没有设置资源的播放器操作对象
+     * @return
+     */
+    public MediaOperator createOperator() {
+
+        return new MediaOperator(mMediaPlayer);
+    }
+
     public void releasePlayer() {
         if (mMediaPlayer != null) {
             mMediaPlayer.stop();
@@ -149,11 +160,11 @@ public class MediaManager {
     }
 
     /**
-     * 添加额外的参数信息
-     * @param easyMediaOptions
+     * 对整个过程进行加工处理 如：多次循环，声音变化
+     * @param easyMediaHandle
      * @return
      */
-    public MediaManager options(final EasyMediaOptions easyMediaOptions) {
+    public MediaManager handle(final EasyMediaHandle easyMediaHandle) {
 
         return this;
     }
@@ -161,6 +172,18 @@ public class MediaManager {
 
     private void addOptions() {
 
+    }
+
+    public int getCurrentPosition() {
+        return mMediaPlayer.getCurrentPosition();
+    }
+
+    public int getDuration() {
+        return mMediaPlayer.getDuration();
+    }
+
+    public boolean isPlaying() {
+        return mMediaPlayer.isPlaying();
     }
 
     /**

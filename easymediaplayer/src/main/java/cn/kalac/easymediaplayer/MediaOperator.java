@@ -12,6 +12,7 @@ import java.io.IOException;
  * @date 2019/8/18 15:06
  */
 public class MediaOperator {
+    private static final String TAG = "MediaOperator";
 
     private static MediaPlayer mMediaPlayer;
 
@@ -20,6 +21,7 @@ public class MediaOperator {
     }
 
     public void start() {
+        Log.i(TAG, "start: ");
         if (mMediaPlayer == null) {
             throw new IllegalArgumentException("You must load res first");
         }
@@ -29,11 +31,13 @@ public class MediaOperator {
     }
 
     public void pause() {
+
         if (mMediaPlayer == null) {
             throw new IllegalArgumentException("mediaPlayer is null");
         }
 
         if (mMediaPlayer.isPlaying()) {
+            Log.i(TAG, "pause: ");
             mMediaPlayer.pause();
         }
     }
@@ -50,4 +54,8 @@ public class MediaOperator {
         mMediaPlayer.seekTo(msec);
     }
 
+
+    public void reset() {
+        mMediaPlayer.reset();
+    }
 }
