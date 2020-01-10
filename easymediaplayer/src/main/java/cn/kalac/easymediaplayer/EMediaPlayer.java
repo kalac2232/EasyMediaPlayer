@@ -38,7 +38,6 @@ class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletionListen
             autoPlayAfterPrepared = true;
             return;
         }
-        Log.i(TAG, "start: ");
         super.start();
         if (mManagerListener != null) {
             mManagerListener.onStart(mPlayingRes);
@@ -47,7 +46,7 @@ class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletionListen
 
     public void setDataSource(int resId) {
         calibratePlayStatus();
-
+        reset();
         AssetFileDescriptor afd = mContext.getResources().openRawResourceFd(resId);
         if (afd == null) {
             if (mManagerListener != null) {
@@ -82,7 +81,6 @@ class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletionListen
     private void calibratePlayStatus() {
         if (isPlaying()) {
             stop();
-            reset();
             if (mManagerListener != null) {
                 mManagerListener.onError(mPlayingRes,"mediaplayer is interrupt");
             }
@@ -93,6 +91,7 @@ class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletionListen
     @Override
     public void setDataSource(String path) {
         calibratePlayStatus();
+        reset();
         try {
             super.setDataSource(path);
             mPlayingRes = path;
@@ -109,6 +108,7 @@ class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletionListen
     @Override
     public void setDataSource(Context context, Uri uri) {
         calibratePlayStatus();
+        reset();
         try {
             super.setDataSource(context, uri);
             mPlayingRes = uri;
@@ -160,7 +160,6 @@ class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletionListen
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        Log.i(TAG, "onCompletion: ");
         if (mManagerListener != null) {
             mManagerListener.onComplete(mPlayingRes);
         }
@@ -177,7 +176,6 @@ class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletionListen
 
     @Override
     public void onPrepared(MediaPlayer mp) {
-        Log.i(TAG, "onPrepared: ");
         isPrepared = true;
         if (mManagerListener != null) {
             mManagerListener.onPrepare(mPlayingRes);
@@ -190,8 +188,6 @@ class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletionListen
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
-
-        Log.i(TAG, "onError: ");
 
         //clearStatus();
 

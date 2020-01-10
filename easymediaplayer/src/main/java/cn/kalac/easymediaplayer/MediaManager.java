@@ -24,10 +24,13 @@ public class MediaManager {
     private EasyMediaHandle mEasyMediaHandle;
 
     /**
-     * 一个播放资源对应的监听
+     * 一个播放资源对应的所有监听器对象,内部使用
      */
     private HashMap<Object,List<EasyMediaListener>> mResListenerMap;
 
+    /**
+     * 想法是：一个页面对应一个音乐播放器，在一个界面中新播放会中断正在播放的音频
+     */
     private static WeakHashMap<Context,MediaManager> mMediaManagerMap;
 
     private EasyMediaListener mEasyMediaListener;
@@ -39,22 +42,28 @@ public class MediaManager {
     }
 
     public static MediaManager newInstance(Context context) {
-
+        MediaManager mediaManager;
         if (mMediaManagerMap == null) {
             mMediaManagerMap = new WeakHashMap<>();
-            MediaManager mediaManager = new MediaManager(context);
+            mediaManager = new MediaManager(context);
             mMediaManagerMap.put(context,mediaManager);
-            return mediaManager;
         } else {
-            MediaManager mediaManager = mMediaManagerMap.get(context);
+            mediaManager = mMediaManagerMap.get(context);
             if (mediaManager == null) {
                 mediaManager = new MediaManager(context);
                 mMediaManagerMap.put(context,mediaManager);
             }
 
-            return mediaManager;
         }
 
+
+        mediaManager.initStates();
+        return mediaManager;
+
+    }
+
+    private void initStates() {
+        mEasyMediaListener = null;
     }
 
     /**
@@ -65,7 +74,6 @@ public class MediaManager {
         if (resId < 0) {
             throw new IllegalStateException("check your resId");
         }
-        addListener(resId);
 
         mMediaPlayer.setDataSource(resId);
         mMediaPlayer.prepareAsync();
@@ -79,12 +87,16 @@ public class MediaManager {
      */
     private void addListener(Object o) {
         if (mEasyMediaListener != null) {
-            List<EasyMediaListener> list = mResListenerMap.get(0);
+            List<EasyMediaListener> list = mResListenerMap.get(o);
             if (list == null) {
                 list = new ArrayList<>();
             }
-            list.add(mEasyMediaListener);
-            mResListenerMap.put(o,list);
+
+            if (!list.contains(mEasyMediaListener)) {
+                list.add(mEasyMediaListener);
+                mResListenerMap.put(o,list);
+            }
+
         }
     }
 
@@ -97,7 +109,6 @@ public class MediaManager {
         if (TextUtils.isEmpty(url)) {
             throw new IllegalStateException("check your url");
         }
-        addListener(url);
 
         mMediaPlayer.setDataSource(url);
         mMediaPlayer.prepareAsync();
@@ -108,7 +119,6 @@ public class MediaManager {
         if (uri == null) {
             throw new IllegalStateException("check your uri");
         }
-        addListener(uri);
 
         mMediaPlayer.setDataSource(mContext,uri);
         mMediaPlayer.prepareAsync();
@@ -125,8 +135,6 @@ public class MediaManager {
      * @param fileName
      */
     public MediaManager loadAssets(String fileName) {
-
-        addListener(fileName);
 
         mMediaPlayer.setAssetsDataSource(fileName);
 
@@ -185,7 +193,7 @@ public class MediaManager {
     }
 
     public void start() {
-        Log.i(TAG, "start: ");
+        //Log.i(TAG, "start: ");
         if (mMediaPlayer == null) {
             throw new IllegalArgumentException("You must load res first");
         }
@@ -204,7 +212,7 @@ public class MediaManager {
         }
 
         if (mMediaPlayer.isPlaying()) {
-            Log.i(TAG, "pause: ");
+            //Log.i(TAG, "pause: ");
             if (mEasyMediaHandle != null) {
                 mEasyMediaHandle.pause();
             } else {
@@ -244,6 +252,10 @@ public class MediaManager {
                     listener.onComplete();
                 }
             }
+
+            if (mEasyMediaListener != null) {
+                mEasyMediaListener.onComplete();
+            }
         }
 
 
@@ -253,6 +265,10 @@ public class MediaManager {
                 for (EasyMediaListener listener : listeners) {
                     listener.onPrepare();
                 }
+            }
+
+            if (mEasyMediaListener != null) {
+                mEasyMediaListener.onPrepare();
             }
         }
 
@@ -264,6 +280,10 @@ public class MediaManager {
                     listener.onStart();
                 }
             }
+
+            if (mEasyMediaListener != null) {
+                mEasyMediaListener.onStart();
+            }
         }
 
 
@@ -273,6 +293,10 @@ public class MediaManager {
                 for (EasyMediaListener listener : listeners) {
                     listener.onError(errorMessage);
                 }
+            }
+
+            if (mEasyMediaListener != null) {
+                mEasyMediaListener.onError(errorMessage);
             }
         }
     }

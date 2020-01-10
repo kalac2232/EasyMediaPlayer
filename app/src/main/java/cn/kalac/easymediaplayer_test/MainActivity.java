@@ -6,12 +6,14 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.kalac.easymediaplayer.EasyMediaListener;
 import cn.kalac.easymediaplayer.EasyMediaPlayer;
+import cn.kalac.easymediaplayer.MediaManager;
 import cn.kalac.easymediaplayer.MediaOperator;
 
 
@@ -27,33 +29,25 @@ public class MainActivity extends AppCompatActivity {
         mContext = this;
         setContentView(R.layout.activity_main);
 
-        final int res = R.raw.great;
-        final String url = "http://www.kalac.cn:8080/music.mp3";
 
-        MediaOperator mediaOperator = EasyMediaPlayer.with(this).load(url);
-        mediaOperator.start();
-
-        mediaOperator.pause();
-
-        new Handler().postDelayed(new Runnable() {
+        findViewById(R.id.button1).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void run() {
+            public void onClick(View v) {
                 EasyMediaPlayer.with(mContext).listener(new EasyMediaListener() {
                     @Override
                     public void onComplete() {
-                        Log.i("---", "onComplete:2");
+                        Log.i(TAG, "onComplete: 1");
                     }
-
-                    @Override
-                    public void onError(String errorMessage) {
-                        super.onError(errorMessage);
-                        Log.e("---", "onError2: " + errorMessage);
-                    }
-                }).load(res).start();
+                }).load(R.raw.great).start();
             }
-        },6000);
+        });
 
-
+        findViewById(R.id.button2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EasyMediaPlayer.with(mContext).load(R.raw.record_true).start();
+            }
+        });
 
 
 
