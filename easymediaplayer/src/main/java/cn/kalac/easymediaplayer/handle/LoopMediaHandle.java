@@ -7,12 +7,8 @@ import cn.kalac.easymediaplayer.MediaManager;
  * @author kalac.
  * @date 2020/1/1 23:37
  */
-public class LoopMediaHandle implements EasyMediaHandle {
+public class LoopMediaHandle extends EasyMediaHandle {
 
     public int loopCount = 1;
 
-    @Override
-    public void bindManager(MediaManager mediaManager) {
-
-    }
 }

@@ -1,9 +1,24 @@
 package cn.kalac.easymediaplayer;
 
+import android.media.MediaPlayer;
+
 /**
  * @author ghn
  * @date 2019/10/17 17:56
  */
-public interface EasyMediaHandle {
-    void bindManager(MediaManager mediaManager);
+public abstract class EasyMediaHandle {
+
+    protected MediaPlayer mMediaPlayer;
+
+    public void bindPlayer(MediaPlayer mediaPlayer) {
+        mMediaPlayer = mediaPlayer;
+    }
+
+    public void start() {
+        mMediaPlayer.start();
+    }
+
+    public void pause() {
+        mMediaPlayer.pause();
+    }
 }

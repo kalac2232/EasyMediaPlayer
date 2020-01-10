@@ -11,6 +11,7 @@ import java.io.IOException;
  * @author kalac.
  * @date 2019/8/18 15:06
  */
+@Deprecated
 public class MediaOperator {
     private static final String TAG = "MediaOperator";
 

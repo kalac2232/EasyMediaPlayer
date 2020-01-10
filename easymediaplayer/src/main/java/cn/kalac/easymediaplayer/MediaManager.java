@@ -3,6 +3,7 @@ package cn.kalac.easymediaplayer;
 import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,10 +15,13 @@ import java.util.WeakHashMap;
  * @date 2019/8/14 22:09
  */
 public class MediaManager {
+    private static final String TAG = "MediaManager";
 
     private EMediaPlayer mMediaPlayer;
 
     private Context mContext;
+
+    private EasyMediaHandle mEasyMediaHandle;
 
     /**
      * 一个播放资源对应的监听
@@ -57,7 +61,7 @@ public class MediaManager {
      * 从资源文件中进行加载
      * @param resId
      */
-    public MediaOperator load(int resId) {
+    public MediaManager load(int resId) {
         if (resId < 0) {
             throw new IllegalStateException("check your resId");
         }
@@ -65,9 +69,8 @@ public class MediaManager {
 
         mMediaPlayer.setDataSource(resId);
         mMediaPlayer.prepareAsync();
-        addOptions();
 
-        return new MediaOperator(mMediaPlayer);
+        return this;
     }
 
     /**
@@ -90,7 +93,7 @@ public class MediaManager {
      * 从网络地址中进行加载
      * @param url
      */
-    public MediaOperator load(String url) {
+    public MediaManager load(String url) {
         if (TextUtils.isEmpty(url)) {
             throw new IllegalStateException("check your url");
         }
@@ -98,11 +101,10 @@ public class MediaManager {
 
         mMediaPlayer.setDataSource(url);
         mMediaPlayer.prepareAsync();
-        addOptions();
-        return new MediaOperator(mMediaPlayer);
+        return this;
     }
 
-    public MediaOperator load(Uri uri) {
+    public MediaManager load(Uri uri) {
         if (uri == null) {
             throw new IllegalStateException("check your uri");
         }
@@ -110,33 +112,32 @@ public class MediaManager {
 
         mMediaPlayer.setDataSource(mContext,uri);
         mMediaPlayer.prepareAsync();
-        addOptions();
-        return new MediaOperator(mMediaPlayer);
+        return this;
     }
 
 
-    public MediaOperator load(List list) {
-        addOptions();
-        return new MediaOperator(mMediaPlayer);
+    public MediaManager load(List list) {
+        return this;
     }
 
     /**
      * 从asset中加载资源
      * @param fileName
      */
-    public MediaOperator loadAssets(String fileName) {
+    public MediaManager loadAssets(String fileName) {
 
         addListener(fileName);
 
         mMediaPlayer.setAssetsDataSource(fileName);
 
-        return new MediaOperator(mMediaPlayer);
+        return this;
     }
 
     /**
      * 返回一个还没有设置资源的播放器操作对象
      * @return
      */
+    @Deprecated
     public MediaOperator createOperator() {
 
         return new MediaOperator(mMediaPlayer);
@@ -165,14 +166,11 @@ public class MediaManager {
      * @return
      */
     public MediaManager handle(final EasyMediaHandle easyMediaHandle) {
-
+        mEasyMediaHandle = easyMediaHandle;
+        mEasyMediaHandle.bindPlayer(mMediaPlayer);
         return this;
     }
 
-
-    private void addOptions() {
-
-    }
 
     public int getCurrentPosition() {
         return mMediaPlayer.getCurrentPosition();
@@ -185,6 +183,53 @@ public class MediaManager {
     public boolean isPlaying() {
         return mMediaPlayer.isPlaying();
     }
+
+    public void start() {
+        Log.i(TAG, "start: ");
+        if (mMediaPlayer == null) {
+            throw new IllegalArgumentException("You must load res first");
+        }
+
+        if (mEasyMediaHandle != null) {
+            mEasyMediaHandle.start();
+        } else {
+            mMediaPlayer.start();
+        }
+    }
+
+    public void pause() {
+
+        if (mMediaPlayer == null) {
+            throw new IllegalArgumentException("mediaPlayer is null");
+        }
+
+        if (mMediaPlayer.isPlaying()) {
+            Log.i(TAG, "pause: ");
+            if (mEasyMediaHandle != null) {
+                mEasyMediaHandle.pause();
+            } else {
+                mMediaPlayer.pause();
+            }
+        }
+    }
+
+    public void volume(float volume) {
+        volume(volume,volume);
+    }
+
+    public void volume(float left,float right) {
+        mMediaPlayer.setVolume(left,right);
+    }
+
+    public void seekTo(int msec) {
+        mMediaPlayer.seekTo(msec);
+    }
+
+
+    public void reset() {
+        mMediaPlayer.reset();
+    }
+
 
     /**
      * 功能1：监听的分发
