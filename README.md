@@ -23,7 +23,7 @@ repositories {
 
 
 dependencies {
-    implementation 'cn.kalac:EasyMediaPlayer:0.0.3'
+    implementation 'cn.kalac:EasyMediaPlayer:$lastRelease'
 }
 
 ```
@@ -41,15 +41,15 @@ dependencies {
     ```
 3. 其他`Assets`等资源同理
 ### 暂停等其他操作
-在调用`load`方法后，会返回一个`MediaOperator`对象，使用该对象即可进行对当前`res`音频的操作管理
+在调用`load`方法后，会返回一个`MediaManager`对象，使用该对象即可进行对当前`res`音频的操作管理
 1. 暂停
     ```
     String url = "http://www.kalac.cn:8080/music.mp3";
 
-    MediaOperator mediaOperator = EasyMediaPlayer.with(this).load(url);
-    mediaOperator.start();
+    MediaManager mediaManager = EasyMediaPlayer.with(this).load(url);
+    mediaManager.start();
     //... 
-    mediaOperator.pause();
+    mediaManager.pause();
     ```
 ### 添加监听
 ```
@@ -74,10 +74,18 @@ public void onError(String errorMessage) {
 
 }
 ```
+
+### 设置处理器
+现内置了一个播放时声音从小变大，暂停（停止）时音量有大变小的处理器
+
+```
+EasyMediaPlayer.with(mContext).handle(new VolumeGradientHandle()).load(R.raw.voice).start();
+```
+
 ### 资源释放
 **不需要关系资源释放的问题，EasyMediaPlayer会自动进行释放**
 ## Todo
-1. 添加更多的对音频的操作
-2. 可灵活配置的选项
-3. 按序播放列表中音频
-4. 音频焦点检测
+- [x] 添加更多的对音频的操作
+- [ ] 可灵活配置的选项
+- [ ] 按序播放列表中音频
+- [ ] 音频焦点检测

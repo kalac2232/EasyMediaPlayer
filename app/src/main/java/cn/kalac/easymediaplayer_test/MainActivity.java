@@ -15,6 +15,7 @@ import cn.kalac.easymediaplayer.EasyMediaListener;
 import cn.kalac.easymediaplayer.EasyMediaPlayer;
 import cn.kalac.easymediaplayer.MediaManager;
 import cn.kalac.easymediaplayer.MediaOperator;
+import cn.kalac.easymediaplayer.handle.VolumeGradientHandle;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.button2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EasyMediaPlayer.with(mContext).load(R.raw.record_true).start();
+                EasyMediaPlayer.with(mContext).handle(new VolumeGradientHandle()).load(R.raw.record_true).start();
             }
         });
 
