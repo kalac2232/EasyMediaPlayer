@@ -39,6 +39,12 @@ public class MainActivity extends AppCompatActivity {
                     public void onComplete() {
                         Log.i(TAG, "onComplete: 1");
                     }
+
+                    @Override
+                    public void onError(String errorMessage) {
+                        super.onError(errorMessage);
+                        Log.e(TAG, "onError1: " + errorMessage );
+                    }
                 }).load(R.raw.great).start();
             }
         });
@@ -46,7 +52,18 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.button2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EasyMediaPlayer.with(mContext).handle(new VolumeGradientHandle()).load(R.raw.record_true).start();
+                EasyMediaPlayer.with(mContext).handle(new VolumeGradientHandle()).listener(new EasyMediaListener() {
+                    @Override
+                    public void onComplete() {
+                        Log.i(TAG, "onComplete: 2");
+                    }
+
+                    @Override
+                    public void onError(String errorMessage) {
+                        super.onError(errorMessage);
+                        Log.e(TAG, "onError2: " + errorMessage );
+                    }
+                }).load(R.raw.record_true).start();
             }
         });
 

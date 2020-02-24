@@ -82,7 +82,7 @@ class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletionListen
         if (isPlaying()) {
             stop();
             if (mManagerListener != null) {
-                mManagerListener.onError(mPlayingRes,"mediaplayer is interrupt");
+                mManagerListener.onError(mPlayingRes,"MediaPlayer is interrupt");
             }
         }
     }

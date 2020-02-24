@@ -24,7 +24,7 @@ public class MediaManager {
     private EasyMediaHandle mEasyMediaHandle;
 
     /**
-     * 一个播放资源对应的所有监听器对象,内部使用
+     * 一个播放资源对应的所有监听器对象,内部使用,外部只会有一个listener对象
      */
     private HashMap<Object,List<EasyMediaListener>> mResListenerMap;
 
@@ -75,6 +75,8 @@ public class MediaManager {
             throw new IllegalStateException("check your resId");
         }
 
+        addListener(resId);
+
         mMediaPlayer.setDataSource(resId);
         mMediaPlayer.prepareAsync();
 
@@ -91,11 +93,9 @@ public class MediaManager {
             if (list == null) {
                 list = new ArrayList<>();
             }
-
-            if (!list.contains(mEasyMediaListener)) {
-                list.add(mEasyMediaListener);
-                mResListenerMap.put(o,list);
-            }
+            list.clear();
+            list.add(mEasyMediaListener);
+            mResListenerMap.put(o,list);
 
         }
     }
@@ -110,6 +110,8 @@ public class MediaManager {
             throw new IllegalStateException("check your url");
         }
 
+        addListener(url);
+
         mMediaPlayer.setDataSource(url);
         mMediaPlayer.prepareAsync();
         return this;
@@ -120,6 +122,8 @@ public class MediaManager {
             throw new IllegalStateException("check your uri");
         }
 
+        addListener(uri);
+
         mMediaPlayer.setDataSource(mContext,uri);
         mMediaPlayer.prepareAsync();
         return this;
@@ -127,6 +131,7 @@ public class MediaManager {
 
 
     public MediaManager load(List list) {
+        addListener(list);
         return this;
     }
 
@@ -135,6 +140,8 @@ public class MediaManager {
      * @param fileName
      */
     public MediaManager loadAssets(String fileName) {
+
+        addListener(fileName);
 
         mMediaPlayer.setAssetsDataSource(fileName);
 
@@ -253,9 +260,6 @@ public class MediaManager {
                 }
             }
 
-            if (mEasyMediaListener != null) {
-                mEasyMediaListener.onComplete();
-            }
         }
 
 
@@ -266,10 +270,6 @@ public class MediaManager {
                     listener.onPrepare();
                 }
             }
-
-            if (mEasyMediaListener != null) {
-                mEasyMediaListener.onPrepare();
-            }
         }
 
 
@@ -279,10 +279,6 @@ public class MediaManager {
                 for (EasyMediaListener listener : listeners) {
                     listener.onStart();
                 }
-            }
-
-            if (mEasyMediaListener != null) {
-                mEasyMediaListener.onStart();
             }
         }
 
@@ -295,9 +291,6 @@ public class MediaManager {
                 }
             }
 
-            if (mEasyMediaListener != null) {
-                mEasyMediaListener.onError(errorMessage);
-            }
         }
     }
 }
