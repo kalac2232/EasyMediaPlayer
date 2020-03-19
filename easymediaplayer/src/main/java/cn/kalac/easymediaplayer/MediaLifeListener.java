@@ -45,6 +45,8 @@ class MediaLifeListener implements LifeListener{
 
         if (mediaManager != null) {
             mediaManager.releasePlayer();
+            //清除manager 避免内存泄漏
+            mediaManager.clear();
         }
 
     }

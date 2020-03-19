@@ -66,6 +66,11 @@ public class MediaManager {
         mEasyMediaListener = null;
     }
 
+    public void clear() {
+        mMediaManagerMap.remove(mContext);
+        mContext = null;
+    }
+
     /**
      * 从资源文件中进行加载
      * @param resId
