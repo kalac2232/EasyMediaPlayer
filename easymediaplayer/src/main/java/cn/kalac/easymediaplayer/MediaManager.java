@@ -23,6 +23,8 @@ public class MediaManager {
 
     private EasyMediaHandle mEasyMediaHandle;
 
+    private HashMap<Object,EMediaOptions> mOptionsMap;
+
     /**
      * 一个播放资源对应的所有监听器对象,内部使用,外部只会有一个listener对象
      */
@@ -35,13 +37,16 @@ public class MediaManager {
 
     private EasyMediaListener mEasyMediaListener;
 
+    private Object mRes;
+
     private MediaManager(Context context) {
         mContext = context;
         mResListenerMap = new HashMap<>();
-        mMediaPlayer = new EMediaPlayer(context,new ManagerListener());
+        mOptionsMap = new HashMap<>();
+        mMediaPlayer = new EMediaPlayer(context,this,new ManagerListener());
     }
 
-    public static MediaManager newInstance(Context context) {
+    static MediaManager newInstance(Context context) {
         MediaManager mediaManager;
         if (mMediaManagerMap == null) {
             mMediaManagerMap = new WeakHashMap<>();
@@ -66,9 +71,10 @@ public class MediaManager {
         mEasyMediaListener = null;
     }
 
-    public void clear() {
+    void clear() {
         mMediaManagerMap.remove(mContext);
         mContext = null;
+        mRes = null;
     }
 
     /**
@@ -79,6 +85,8 @@ public class MediaManager {
         if (resId < 0) {
             throw new IllegalStateException("check your resId");
         }
+
+        mRes = resId;
 
         addListener(resId);
 
@@ -117,6 +125,8 @@ public class MediaManager {
 
         addListener(url);
 
+        mRes = url;
+
         mMediaPlayer.setDataSource(url);
         mMediaPlayer.prepareAsync();
         return this;
@@ -129,6 +139,8 @@ public class MediaManager {
 
         addListener(uri);
 
+        mRes = uri;
+
         mMediaPlayer.setDataSource(mContext,uri);
         mMediaPlayer.prepareAsync();
         return this;
@@ -137,6 +149,9 @@ public class MediaManager {
 
     public MediaManager load(List list) {
         addListener(list);
+
+        mRes = list;
+
         return this;
     }
 
@@ -149,6 +164,8 @@ public class MediaManager {
         addListener(fileName);
 
         mMediaPlayer.setAssetsDataSource(fileName);
+
+        mRes = fileName;
 
         return this;
     }
@@ -258,6 +275,9 @@ public class MediaManager {
 
 
         public void onComplete(Object res) {
+
+            mRes = null;
+
             List<EasyMediaListener> listeners = mResListenerMap.get(res);
             if (listeners != null) {
                 for (EasyMediaListener listener : listeners) {
@@ -298,4 +318,27 @@ public class MediaManager {
 
         }
     }
+
+
+    public MediaManager outputInterrupterError() {
+
+        if (mRes == null) {
+            throw new RuntimeException("set option must be after load()");
+        }
+
+        getOptions(mRes).ignoreInterrupterError = false;
+        return this;
+    }
+
+
+    public EMediaOptions getOptions(Object res) {
+        EMediaOptions eMediaOptions = mOptionsMap.get(res);
+        if (eMediaOptions == null) {
+            eMediaOptions = new EMediaOptions();
+            mOptionsMap.put(res,eMediaOptions);
+        }
+        return eMediaOptions;
+    }
+
+
 }

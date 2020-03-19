@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.util.Log;
 
 
 import java.io.IOException;
@@ -18,13 +17,15 @@ class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletionListen
     private static final String TAG = "EMediaPlayer";
     private final Context mContext;
 
+    MediaManager mManager;
     MediaManager.ManagerListener mManagerListener;
     private boolean isPrepared = false;
     private boolean autoPlayAfterPrepared = false;
     private Object mPlayingRes;
 
-    public EMediaPlayer(Context context, MediaManager.ManagerListener managerListener) {
+    public EMediaPlayer(Context context, MediaManager mediaManager, MediaManager.ManagerListener managerListener) {
         mContext = context;
+        mManager = mediaManager;
         mManagerListener = managerListener;
         setOnCompletionListener(this);
         setOnPreparedListener(this);
@@ -45,7 +46,7 @@ class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletionListen
     }
 
     public void setDataSource(int resId) {
-        calibratePlayStatus();
+        calibratePlayStatus(mPlayingRes);
         reset();
         AssetFileDescriptor afd = mContext.getResources().openRawResourceFd(resId);
         if (afd == null) {
@@ -78,10 +79,10 @@ class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletionListen
     /**
      * 判断是否符合播放条件
      */
-    private void calibratePlayStatus() {
+    private void calibratePlayStatus(Object res) {
         if (isPlaying()) {
             stop();
-            if (mManagerListener != null) {
+            if (!mManager.getOptions(res).ignoreInterrupterError && mManagerListener != null) {
                 mManagerListener.onError(mPlayingRes,"MediaPlayer is interrupt");
             }
         }
@@ -90,7 +91,7 @@ class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletionListen
 
     @Override
     public void setDataSource(String path) {
-        calibratePlayStatus();
+        calibratePlayStatus(mPlayingRes);
         reset();
         try {
             super.setDataSource(path);
@@ -107,7 +108,7 @@ class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletionListen
 
     @Override
     public void setDataSource(Context context, Uri uri) {
-        calibratePlayStatus();
+        calibratePlayStatus(mPlayingRes);
         reset();
         try {
             super.setDataSource(context, uri);
@@ -122,7 +123,7 @@ class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletionListen
     }
 
     public void setAssetsDataSource(String fileName) {
-        calibratePlayStatus();
+        calibratePlayStatus(mPlayingRes);
         AssetFileDescriptor fd = null;
         try {
             fd = mContext.getAssets().openFd(fileName);

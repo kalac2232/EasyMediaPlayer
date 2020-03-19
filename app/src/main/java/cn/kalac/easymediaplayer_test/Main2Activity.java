@@ -24,7 +24,6 @@ public class Main2Activity extends AppCompatActivity {
         mContext = this;
         setContentView(R.layout.activity_main);
 
-
         findViewById(R.id.button1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -39,7 +38,7 @@ public class Main2Activity extends AppCompatActivity {
                         super.onError(errorMessage);
                         Log.e(TAG, "onError1: " + errorMessage );
                     }
-                }).load(R.raw.great).start();
+                }).load(R.raw.great).outputInterrupterError().start();
 
             }
         });
