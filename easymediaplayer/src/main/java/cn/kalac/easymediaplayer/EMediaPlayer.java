@@ -161,10 +161,10 @@ class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletionListen
 
     @Override
     public void onCompletion(MediaPlayer mp) {
+        reset();
         if (mManagerListener != null) {
             mManagerListener.onComplete(mPlayingRes);
         }
-        reset();
 
     }
 
