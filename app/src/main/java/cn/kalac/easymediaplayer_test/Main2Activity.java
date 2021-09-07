@@ -7,9 +7,11 @@ import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import cn.kalac.easymediaplayer.EasyMediaListener;
+import cn.kalac.easymediaplayer.listener.EasyMediaListener;
 import cn.kalac.easymediaplayer.EasyMediaPlayer;
+import cn.kalac.easymediaplayer.handle.LoopMediaHandle;
 import cn.kalac.easymediaplayer.handle.VolumeGradientHandle;
+import cn.kalac.easymediaplayer.listener.LoopMediaListener;
 
 
 public class Main2Activity extends AppCompatActivity {
@@ -27,18 +29,7 @@ public class Main2Activity extends AppCompatActivity {
         findViewById(R.id.button1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EasyMediaPlayer.with(mContext).listener(new EasyMediaListener() {
-                    @Override
-                    public void onComplete() {
-                        Log.i(TAG, "onComplete: 1");
-                    }
-
-                    @Override
-                    public void onError(String errorMessage) {
-                        super.onError(errorMessage);
-                        Log.e(TAG, "onError1: " + errorMessage );
-                    }
-                }).load(R.raw.test_music48k).outputInterrupterError().start();
+                EasyMediaPlayer.with(mContext).load(R.raw.great).start();
 
             }
         });
@@ -61,7 +52,31 @@ public class Main2Activity extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.button3).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EasyMediaPlayer.with(mContext).listener(new LoopMediaListener() {
+                    @Override
+                    public void onComplete(int remainderCount) {
+                        super.onComplete(remainderCount);
+                        Log.i(TAG, "onComplete: " + remainderCount);
+                    }
 
+                    @Override
+                    public void onLoopComplete() {
+                        super.onLoopComplete();
+                        Log.i(TAG, "onLoopComplete: ");
+                    }
+
+                    @Override
+                    public void onError(String errorMessage) {
+                        super.onError(errorMessage);
+                        Log.e(TAG, "onError1: " + errorMessage );
+                    }
+                }).load(R.raw.great).handle(new LoopMediaHandle(3)).start();
+
+            }
+        });
 
     }
 }

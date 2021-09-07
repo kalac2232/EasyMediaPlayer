@@ -12,7 +12,7 @@ import java.io.IOException;
  * @author ghn
  * @date 2019/11/19 17:21
  */
-class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener {
+public class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener {
 
     private static final String TAG = "EMediaPlayer";
     private final Context mContext;
@@ -82,11 +82,11 @@ class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletionListen
     private void calibratePlayStatus(Object res) {
         if (isPlaying() || isPreparing) {
             stop();
-            reset();
             if (!mManager.getOptions(res).ignoreInterrupterError && mManagerListener != null) {
                 mManagerListener.onError(mPlayingRes,"MediaPlayer is interrupt");
             }
         }
+        reset();
     }
 
 
@@ -160,7 +160,7 @@ class EMediaPlayer extends MediaPlayer implements MediaPlayer.OnCompletionListen
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        reset();
+        //reset();
         if (mManagerListener != null) {
             mManagerListener.onComplete(mPlayingRes);
         }

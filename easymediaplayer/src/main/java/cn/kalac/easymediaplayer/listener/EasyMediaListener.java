@@ -1,4 +1,4 @@
-package cn.kalac.easymediaplayer;
+package cn.kalac.easymediaplayer.listener;
 
 /**
  * @author kalac.

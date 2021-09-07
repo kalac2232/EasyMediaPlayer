@@ -1,6 +1,8 @@
-package cn.kalac.easymediaplayer;
+package cn.kalac.easymediaplayer.handle;
 
 import android.media.MediaPlayer;
+
+import cn.kalac.easymediaplayer.MediaManager;
 
 /**
  * @author ghn
@@ -8,10 +10,12 @@ import android.media.MediaPlayer;
  */
 public abstract class EasyMediaHandle {
 
+    protected MediaManager mMediaManager;
     protected MediaPlayer mMediaPlayer;
 
-    public void bindPlayer(MediaPlayer mediaPlayer) {
-        mMediaPlayer = mediaPlayer;
+    public void bindManager(MediaManager mediaManager) {
+        mMediaManager = mediaManager;
+        mMediaPlayer = mediaManager.getPlayer();
     }
 
     public void start() {

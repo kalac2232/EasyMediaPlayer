@@ -1,14 +1,17 @@
 package cn.kalac.easymediaplayer;
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.text.TextUtils;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.WeakHashMap;
+
+import cn.kalac.easymediaplayer.handle.EasyMediaHandle;
+import cn.kalac.easymediaplayer.listener.EasyMediaListener;
 
 /**
  * @author kalac.
@@ -28,16 +31,16 @@ public class MediaManager {
     /**
      * 一个播放资源对应的所有监听器对象,内部使用,外部只会有一个listener对象
      */
-    private HashMap<Object,List<EasyMediaListener>> mResListenerMap;
+    HashMap<Object,List<EasyMediaListener>> mResListenerMap;
 
     /**
      * 想法是：一个页面对应一个音乐播放器，在一个界面中新播放会中断正在播放的音频
      */
     private static WeakHashMap<Context,MediaManager> mMediaManagerMap;
 
-    private EasyMediaListener mEasyMediaListener;
+    private List<EasyMediaListener> mEasyMediaListenerList = new ArrayList<>();
 
-    private Object mRes;
+    Object mRes;
 
     private MediaManager(Context context) {
         mContext = context;
@@ -68,7 +71,8 @@ public class MediaManager {
     }
 
     private void initStates() {
-        mEasyMediaListener = null;
+        mEasyMediaListenerList.clear();
+        mEasyMediaHandle = null;
     }
 
     void clear() {
@@ -101,16 +105,8 @@ public class MediaManager {
      * @param o
      */
     private void addListener(Object o) {
-        if (mEasyMediaListener != null) {
-            List<EasyMediaListener> list = mResListenerMap.get(o);
-            if (list == null) {
-                list = new ArrayList<>();
-            }
-            list.clear();
-            list.add(mEasyMediaListener);
-            mResListenerMap.put(o,list);
-
-        }
+        mResListenerMap.remove(o);
+        mResListenerMap.put(o,mEasyMediaListenerList);
     }
 
 
@@ -194,7 +190,7 @@ public class MediaManager {
     }
 
     public MediaManager listener(final EasyMediaListener easyMediaListener) {
-        mEasyMediaListener = easyMediaListener;
+        mEasyMediaListenerList.add(easyMediaListener);
         return this;
     }
 
@@ -205,7 +201,7 @@ public class MediaManager {
      */
     public MediaManager handle(final EasyMediaHandle easyMediaHandle) {
         mEasyMediaHandle = easyMediaHandle;
-        mEasyMediaHandle.bindPlayer(mMediaPlayer);
+        mEasyMediaHandle.bindManager(this);
         return this;
     }
 
@@ -268,6 +264,13 @@ public class MediaManager {
         mMediaPlayer.reset();
     }
 
+    public MediaPlayer getPlayer() {
+        return mMediaPlayer;
+    }
+
+    public List<EasyMediaListener> getListenerList() {
+        return mEasyMediaListenerList;
+    }
 
     /**
      * 功能1：监听的分发
