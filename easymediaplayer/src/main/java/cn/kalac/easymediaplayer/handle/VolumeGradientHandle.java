@@ -11,12 +11,13 @@ import cn.kalac.easymediaplayer.MediaManager;
  * @date 2020/1/1 23:39
  */
 public class VolumeGradientHandle extends EasyMediaHandle {
+    private ValueAnimator valueAnimator;
 
     @Override
     public void start() {
 
         //使声音有渐变效果
-        ValueAnimator valueAnimator = ValueAnimator.ofFloat(0,1);
+        valueAnimator = ValueAnimator.ofFloat(0,1);
         valueAnimator.setDuration(1000);
         valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -35,7 +36,7 @@ public class VolumeGradientHandle extends EasyMediaHandle {
     public void pause() {
 
         //使声音有渐变效果
-        ValueAnimator valueAnimator = ValueAnimator.ofFloat(1,0);
+        valueAnimator = ValueAnimator.ofFloat(1,0);
         valueAnimator.setDuration(1000);
         valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -49,5 +50,11 @@ public class VolumeGradientHandle extends EasyMediaHandle {
         });
         valueAnimator.start();
 
+    }
+
+    @Override
+    public void release() {
+        valueAnimator.cancel();
+        super.release();
     }
 }

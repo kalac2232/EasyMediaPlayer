@@ -21,4 +21,14 @@ public abstract class EasyMediaHandle {
     public void pause() {
         mMediaPlayer.pause();
     }
+
+    public void release() {
+        mMediaPlayer.stop();
+
+        //关键语句
+        mMediaPlayer.reset();
+
+        mMediaPlayer.release();
+        mMediaPlayer = null;
+    }
 }

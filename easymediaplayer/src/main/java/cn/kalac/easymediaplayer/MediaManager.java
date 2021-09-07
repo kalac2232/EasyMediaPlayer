@@ -164,7 +164,7 @@ public class MediaManager {
         addListener(fileName);
 
         mMediaPlayer.setAssetsDataSource(fileName);
-
+        mMediaPlayer.prepareAsync();
         mRes = fileName;
 
         return this;
@@ -181,9 +181,10 @@ public class MediaManager {
     }
 
     public void releasePlayer() {
-        if (mMediaPlayer != null) {
+        if (mEasyMediaHandle != null) {
+            mEasyMediaHandle.release();
+        } else if (mMediaPlayer != null) {
             mMediaPlayer.stop();
-
             //关键语句
             mMediaPlayer.reset();
 

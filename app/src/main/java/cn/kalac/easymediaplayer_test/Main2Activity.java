@@ -38,7 +38,7 @@ public class Main2Activity extends AppCompatActivity {
                         super.onError(errorMessage);
                         Log.e(TAG, "onError1: " + errorMessage );
                     }
-                }).load(R.raw.great).outputInterrupterError().start();
+                }).load(R.raw.test_music48k).outputInterrupterError().start();
 
             }
         });
@@ -46,7 +46,7 @@ public class Main2Activity extends AppCompatActivity {
         findViewById(R.id.button2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EasyMediaPlayer.with(mContext).handle(new VolumeGradientHandle()).listener(new EasyMediaListener() {
+                EasyMediaPlayer.with(mContext).listener(new EasyMediaListener() {
                     @Override
                     public void onComplete() {
                         Log.i(TAG, "onComplete: 2");
@@ -57,7 +57,7 @@ public class Main2Activity extends AppCompatActivity {
                         super.onError(errorMessage);
                         Log.e(TAG, "onError2: " + errorMessage );
                     }
-                }).load(R.raw.record_true).start();
+                }).loadAssets("test_music48k.mp3").handle(new VolumeGradientHandle()).start();
             }
         });
 

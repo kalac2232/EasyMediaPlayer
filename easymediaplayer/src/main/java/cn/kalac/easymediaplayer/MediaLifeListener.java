@@ -44,6 +44,8 @@ class MediaLifeListener implements LifeListener{
     public void onDestroy() {
 
         if (mediaManager != null) {
+            // 如果存在音量的渐变处理器，这个pause则会使音频结束的自然一些
+            mediaManager.pause();
             mediaManager.releasePlayer();
             //清除manager 避免内存泄漏
             mediaManager.clear();

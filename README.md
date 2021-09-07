@@ -2,6 +2,7 @@
 A MediaPlayer Use On  Android
 
 一个更易使用音乐播放器
+适用于非音乐播放器应用，整个app中只需要在特定情形下播放音效的场景
 
 ![release](https://img.shields.io/github/v/release/kalac2232/EasyMediaPlayer)
 &nbsp;
@@ -39,7 +40,12 @@ dependencies {
     ```
     EasyMediaPlayer.with(mContext).load(R.raw.music).start();
     ```
-3. 其他`Assets`等资源同理
+3. 播放`Assets`下音频
+
+    ```
+    EasyMediaPlayer.with(mContext)..loadAssets("test_music48k.mp3").start();
+    ```
+4. 其他资源同理
 ### 暂停等其他操作
 在调用`load`方法后，会返回一个`MediaManager`对象，使用该对象即可进行对当前`res`音频的操作管理
 1. 暂停
