@@ -2,7 +2,7 @@
 A MediaPlayer Use On  Android
 
 一个更易使用音乐播放器
-适用于非音乐播放器应用，整个app中只需要在特定情形下播放音效的场景
+适用于非音乐播放器应用，只需要在特定情形下播放短音效的场景
 
 ![release](https://img.shields.io/github/v/release/kalac2232/EasyMediaPlayer)
 &nbsp;
@@ -18,13 +18,13 @@ A MediaPlayer Use On  Android
 
 ```
 repositories {
-    jcenter()
+    mavenCentral()
 
 }
 
 
 dependencies {
-    implementation 'cn.kalac:EasyMediaPlayer:$lastRelease'
+    implementation 'io.github.kalac2232:easymediaplayer:$lastRelease'
 }
 
 ```

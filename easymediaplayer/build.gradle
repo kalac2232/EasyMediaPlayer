@@ -1,5 +1,5 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.novoda.bintray-release' // 添加bintray插件
+//apply plugin: 'com.novoda.bintray-release' // 添加bintray插件
 
 android {
     compileSdkVersion 28
@@ -16,6 +16,8 @@ android {
 
     buildTypes {
         release {
+
+
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -26,13 +28,12 @@ android {
 dependencies {
     //implementation fileTree(dir: 'libs', include: ['*.jar'])
 }
-// 配置2
-publish {
-    userOrg = 'kalac2232'             // Binary用户名
-    repoName = 'maven'          // Binary上的刚才新建的仓库名（Repository）
-    groupId = 'cn.kalac'        // 依赖名compile 'x:y:z '中的包名x
-    artifactId = 'EasyMediaPlayer'        // 依赖名compile 'x:y:z '中的项目名y
-    publishVersion = '0.0.6'          // 依赖名compile 'x:y:z '中的版本号z
-    desc = 'a easy use mediaplayer on android'            // 对该开源组件的说明
-    website = 'https://github.com/kalac2232/EasyMediaPlayer'  // VCS地址，即填写项目上传的Github地址
+ext {
+    groupId = 'io.github.kalac2232'
+    version = '0.0.7'
+    description = '一个更易使用音乐播放器' //项目
+    gitUrl = 'https://github.com/kalac2232/EasyMediaPlayer' //Git地址，不包含.git
+    authorEmail = 'hananig5.4@gmail.com' // 作者邮箱
+    license = 'Apache-2.0'
 }
+apply from: 'publish.gradle'
